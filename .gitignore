@@ -1,1 +1,4 @@
 node_modules
+admin.js
+badbankAuth.json
+config.env
