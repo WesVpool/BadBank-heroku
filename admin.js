@@ -1,6 +1,7 @@
 const admin = require('firebase-admin');
-
-const serviceAccount = require("./badbankAuth.json");
+const dotenv = require("dotenv");
+dotenv.config({path: "./config.env"});
+const serviceAccount = process.env.GOOGLE_CREDS;
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
