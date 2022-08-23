@@ -1,11 +1,12 @@
 function CreateAccount(){
-
+  const auth = firebase.auth();
+  const user = auth.currentUser;
   const [show, setShow]         = React.useState(true);
   const [status, setStatus]     = React.useState('');
   const [name, setName]         = React.useState('');
   const [email, setEmail]       = React.useState('');
   const [password, setPassword] = React.useState('');
-  const currentUser = React.useContext(UserContext).currentUser;
+  // const liveUser = React.useContext(UserContext).liveUser;
 
   function validate(field, label){
       if (!field || field.replaceAll(" ","").length == 0) {
@@ -33,33 +34,43 @@ function CreateAccount(){
     if (!validate(email,    'email'))    return;
     if (!validate(password, 'password')) return;
     if (!validatePass(password, 'password')) return;
-    const auth = firebase.auth();
     auth.signOut();
-    currentUser.splice(0,1);
-    const promise = 
-    auth.createUserWithEmailAndPassword(
+    // liveUser.splice(0,1);
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+      .then(() => {
+      auth.createUserWithEmailAndPassword(
       email,
       password)
-      .then((userCredential) => {
-        // Signed in 
-        // const user = userCredential.user;
-        // console.log(user);
-        // setShow(false);
-        const url = `/account/create/${name}/${email}/${password}`;
-        fetch(url)
-        .then(response => response.text())
-        .then(text => {
-            try {
-                const user = JSON.parse(text);
-                currentUser.splice(0,1,user);
+      .then((result) => {
+        return result.user.updateProfile({
+          displayName: name
+        })
+      })
+      .then((userCred) => {
+        auth.currentUser.getIdToken()
+        .then(idToken => {
+          console.log("idToken:", idToken);
+          fetch(`/account/create/${name}/${email}/${password}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': idToken
+            }
+          })
+          .then(response => response.text())
+          .then(text => {
+              try {
+                const data = JSON.parse(text);
+                // liveUser.splice(0,1,data);
+                window.sessionStorage.setItem("liveUser", JSON.stringify(data));
                 setStatus('');
                 setShow(false);
-                console.log('JSON:', user);
-            } catch(err) {
-                setStatus(text)
+                console.log('JSON:', data);
+              } catch(err) {
+                setStatus('Account Creation Failed. Please Try Again');
                 console.log('err:', text);
-            }
-        });
+              }
+          });
+        })
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -67,7 +78,30 @@ function CreateAccount(){
         console.log(errorCode + errorMessage);
         setStatus(errorMessage);
       });
-    } 
+      })
+}
+        // .catch((e) => console.log("e:", e))
+  //       const url = `/account/create/${name}/${email}/${password}`;
+  //       fetch(url, {
+  //         method: 'GET',
+  //         headers: {
+  //             'Authorization': user
+  //         }})
+  //       .then(response => response.text())
+  //       .then(text => {
+  //           try {
+  //               const data = JSON.parse(text);
+  //               // liveUser.splice(0,1,data);
+  //               window.sessionStorage.setItem("liveUser", JSON.stringify(data));
+  //               setStatus('');
+  //               setShow(false);
+  //               console.log('JSON:', data);
+  //           } catch(err) {
+                // setStatus(text);
+                // console.log('err:', text);
+  //           }
+  //       });
+
 
   function clearForm(){
     setName('');

@@ -1,21 +1,30 @@
 function Deposit(){
-  const currentUser = React.useContext(UserContext).currentUser;
+  const auth = firebase.auth();
+  const user = auth.currentUser;
+  // const liveUser = React.useContext(UserContext).liveUser;
+  const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
   const action = "DEPOSIT"
   const [data, setData]         = React.useState('');
   const [show, setShow]         = React.useState(true);
+  const [login, setLogin]       = React.useState('');
   const [status, setStatus]     = React.useState('');
-  const [email, setEmail]       = React.useState(()=>{
-    if(currentUser[0] !== undefined){
-    return currentUser[0].email}});
-  const [name, setName]         = React.useState(()=>{
-    if(currentUser[0] !== undefined){
-    return currentUser[0].name}});
+  const [email, setEmail]       = React.useState('');
+  const [name, setName]         = React.useState('');
   const [amount, setAmount]     = React.useState('');
-  const [balance, setBalance]   = React.useState(()=>{
-    if(currentUser[0] !== undefined){
-    return currentUser[0].balance}});
+  const [balance, setBalance]   = React.useState('');
+  
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      setLogin(true);
+      setName(user.displayName);
+      setEmail(user.email);
+      setBalance(liveUser.balance);
+    } else {
+      setLogin(false);
+    }
+  }); 
 
-  if(email == null){
+  if(login === false){
     return(
       <div>
         <h5>USER NOT LOGGED IN!</h5>
@@ -56,23 +65,56 @@ function Deposit(){
     setShow(true);
   }
 
-  function handleDeposit(){
+  function handleDeposit() {
     if (!validate(amount, "amount")) return;
-    fetch(`/account/update/${email}/${amount}/${action}`)
-    .then(response => response.json())
-    .then(user => {
-        try {
-            // const data = JSON.parse(text);
-            setBalance(user.value.balance);
-            currentUser.splice(0,1,user.value);
-            setShow(false);
-            console.log('JSON:', user.value.balance);
-        } catch(err) {
-            setStatus('Deposit failed')
-            console.log('err:', user.value);
-        }
-    });
+    // call server with token
+    if (auth.currentUser) {
+      auth.currentUser.getIdToken()
+        .then(idToken => {
+          console.log("idToken:", idToken);
+          fetch(`/account/update/${email}/${amount}/${action}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': idToken
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+              try {
+                  // const data = JSON.parse(text);
+                  setBalance(data.value.balance);
+                  // liveUser.splice(0,1,data.value);
+                  window.sessionStorage.setItem("liveUser", JSON.stringify(data.value));
+                  setShow(false);
+                  console.log('JSON:', data.value.balance);
+              } catch(err) {
+                  setStatus('Deposit failed')
+                  console.log('err:', data.value);
+              }
+          });
+        })
+        .catch((e) => console.log("e:", e));
+    } else {
+      console.warn("There is currently no logged in user.");
+    }
   }
+  // function handleDeposit(){
+  //   if (!validate(amount, "amount")) return;
+    // fetch(`/account/update/${email}/${amount}/${action}`)
+    // .then(response => response.json())
+    // .then(user => {
+    //     try {
+    //         // const data = JSON.parse(text);
+    //         setBalance(user.value.balance);
+    //         currentUser.splice(0,1,user.value);
+    //         setShow(false);
+    //         console.log('JSON:', user.value.balance);
+    //     } catch(err) {
+    //         setStatus('Deposit failed')
+    //         console.log('err:', user.value);
+    //     }
+    // });
+  // }
 
   const persHeader = `${name}, Make A Deposit`
   return (

@@ -1,21 +1,32 @@
 function Login(){
+  // const liveUser = React.useContext(UserContext).liveUser;
   const auth = firebase.auth();
   const user = auth.currentUser;
+  const [show, setShow]         = React.useState('');
+  const [login, setLogin]         = React.useState('');
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      setShow(false);
+      setLogin(true);
+      setName(user.displayName);
+      setEmail(user.email);
+    } else {
+      setShow(true);
+      setLogin(false);
+    }
+  }); 
   
-  const currentUser = React.useContext(UserContext).currentUser; 
-  const [show, setShow]         = React.useState(user === null);
   const [status, setStatus]     = React.useState('');
-  const [name, setName]         = React.useState(()=>{
-    if(user !== null){
-    return currentUser[0].name}});
-  const [email, setEmail]       = React.useState(()=>{
-    if(user !== null){
-    return currentUser[0].name}});
+  const [name, setName]         = React.useState('');
+  const [email, setEmail]       = React.useState('');
+    // ()=>{
+    // if(login === true){
+    // return user.email}});
   const [password, setPassword] = React.useState('');
   const [data, setData] = React.useState('');
   
 
-  // console.log(currentUser);
+  // console.log(liveUser);
 
   function validate(field, label){
     if (!field) {
@@ -30,7 +41,7 @@ function Login(){
     setEmail('');
     setPassword('');
     setShow(true);
-    currentUser.splice(0,1);
+    // liveUser.splice(0,1);
     auth.signOut();
   }
 
@@ -38,31 +49,41 @@ function Login(){
     console.log(email,password);
     if (!validate(email,    'email'))    return;
     if (!validate(password, 'password')) return;
-    // const promise = 
-    auth.signInWithEmailAndPassword(
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+      .then(() => {
+      auth.signInWithEmailAndPassword(
       email,
       password)
-      .then((userCredential) => {
-        // Signed in 
-        // const user = userCredential.user;
-        // console.log(user);
-        // setShow(false);
-        const url = `/account/login/${email}/${password}`;
-        fetch(url)
-        .then(response => response.text())
-        .then(text => {
-            try {
-                const user = JSON.parse(text);
-                currentUser.splice(0,1,user);
+      // .then((result) => {
+      //   return result.user.updateProfile({
+      //     displayName: name
+      //   })
+      // })
+      .then((userCred) => {
+        auth.currentUser.getIdToken()
+        .then(idToken => {
+          console.log("idToken:", idToken);
+          fetch(`/account/login/${email}/${password}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': idToken
+            }
+          })
+          .then(response => response.text())
+          .then(text => {
+              try {
+                const data = JSON.parse(text);
+                // liveUser.splice(0,1,data);
+                window.sessionStorage.setItem("liveUser", JSON.stringify(data));
                 setStatus('');
                 setShow(false);
-                setName(user.name)
-                console.log('JSON:', user);
-            } catch(err) {
-                setStatus(text)
+                console.log('JSON:', data);
+              } catch(err) {
+                setStatus('Account Login Failed. Please Try Again');
                 console.log('err:', text);
-            }
-        });
+              }
+          });
+        })
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -70,7 +91,44 @@ function Login(){
         console.log(errorCode + errorMessage);
         setStatus(errorMessage);
       });
-    }
+      })
+}
+  //   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+  //     .then(() => {
+  //     auth.signInWithEmailAndPassword(
+  //     email,
+  //     password)
+  //     .then((userCredential) => {
+  //       // Signed in 
+  //       // const user = userCredential.user;
+  //       // console.log(user);
+  //       // setShow(false);
+  //       const url = `/account/login/${email}/${password}`;
+  //       fetch(url)
+  //       .then(response => response.text())
+  //       .then(text => {
+  //           try {
+  //               const data = JSON.parse(text);
+  //               // liveUser.splice(0,1,data);
+  //               window.sessionStorage.setItem("liveUser", JSON.stringify(data));
+  //               setStatus('');
+  //               setShow(false);
+  //               setName(data.name)
+  //               console.log('JSON:', data);
+  //           } catch(err) {
+  //               setStatus(text)
+  //               console.log('err:', text);
+  //           }
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       const errorCode = error.code;
+  //       const errorMessage = error.message;
+  //       console.log(errorCode + errorMessage);
+  //       setStatus(errorMessage);
+  //     });
+  //   })
+  // }
  
   
   return (
@@ -89,7 +147,7 @@ function Login(){
           ):(
             <>
             <h5>Success! Welcome {name}!</h5>
-            <button type="submit" className="btn btn-light" onClick={() => clearForm()}>Login To A Different Account</button>
+            <button type="submit" className="btn btn-light" onClick={() => clearForm()}>Logout</button>
             </>
           )}
   />

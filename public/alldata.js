@@ -1,31 +1,19 @@
 function AllData(){
-  const currentUser = React.useContext(UserContext).currentUser;
-  const [data, setData]         = React.useState(null);
-  const [show, setShow]         = React.useState(true);
-  const [status, setStatus]     = React.useState('');
-  const [amount, setAmount]     = React.useState('');
-
-  const [email, setEmail]       = React.useState(()=>{
-    if(currentUser[0] !== undefined){
-    return currentUser[0].email}});
-
-  // const [name, setName]         = React.useState(()=>{
-  //   if(data !== null){
-  //   return data[0].name}});
-
-  // const [password, setPassword] = React.useState(()=>{
-  //   if(data !== null){
-  //   return data[0].password}});
+  // const auth = firebase.auth();
+  // const user = auth.currentUser;
   
-  // const [balance, setBalance]   = React.useState(()=>{
-  //   if(data !== null){
-  //   return data[0].balance}});
+  const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
+  const [login, setLogin]       = React.useState('');
 
-  // const [trans, setTrans]       = React.useState(()=>{
-  //   if(data !== null){
-  //   return data[0].trans}});
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      setLogin(true);
+    } else {
+      setLogin(false);
+    }
+  }); 
 
-  if(email == null){
+  if(login === false){
     return(
       <div>
         <h5>USER NOT LOGGED IN!</h5>
@@ -33,109 +21,35 @@ function AllData(){
       </div>)
   };
 
-  React.useEffect(() => {
+
+  // React.useEffect(() => {
         
-    // fetch all accounts from API
-    fetch(`/account/find/${email}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            setData(data);                
-        });
+  //   // fetch all accounts from API
+  //   fetch(`/account/find/${email}`)
+  //       .then(response => response.json())
+  //       .then(data => {
+  //           console.log(data);
+  //           setData(data);                
+  //       });
 
-  }, []);
-
-
-  
-  // fetch(`/account/find/${email}`)
-  // .then(response => response.text())
-  // .then(text => {
-  //         const data = JSON.parse(text);
-  //         console.log(data);
-  //         // setStatus(JSON.stringify(data.value));
-  //         setData(data);
-  //         // setName(data[0].name);
-  //         // setEmail(data[0].email);
-  //         // setPassword(data[0].password);
-  //         // setBalance(data[0].balance);
-  //         // setTrans(data[0].trans);
-  //     } 
-  // );
-
-  // fetch(`/account/find/${email}`)
-  //     .then(response => response.json())
-  //     .then(data => {
-  //         console.log(data);
-  //         setData(data);
-  //         setName(data[0].name);
-  //         setEmail(data[0].email);
-  //         setPassword(data[0].password);
-  //         setBalance(data[0].balance);
-  //         setTrans(data[0].trans);
-  //     });
+  // }, []);
 
   function dollar () {
-    return `Current Balance: $${data[0].balance}`;
+    return `Current Balance: $${liveUser.balance}`;
   }
 
   function info () {
     return(
       <div>
-        <h5 className="fw-bold">Name: {data[0].name}</h5>
-        <h5 className="fw-bold">Email: {data[0].email}</h5>
-        <h5 className="fw-bold">Password: {data[0].password}</h5>
+        <h5 className="fw-bold">Name: {liveUser.name}</h5>
+        <h5 className="fw-bold">Email: {liveUser.email}</h5>
+        <h5 className="fw-bold">Password: {liveUser.password}</h5>
       </div>
     )
   }
 
-  // function tmap () {
-  //   return (
-  //     <div>
-  //       <h5>{name}'s Transactions</h5>
-  //       {trans.map((vary, i) => (
-  //         <p key={i}>{vary}</p>))}
-  //     </div>
-  // )}
-
-  // return (
-  //   <Card
-  //   bgcolor="primary"
-  //   header= {info()}
-  //   title={dollar()}
-  //   status={status}
-  //   body={show ? (  
-  //             [tmap]        
-  //         ):(
-  //           <>
-  //           <div>
-  //             <h5>USER NOT LOGGED IN!</h5>
-  //             <a href="#/login/" className="btn btn-light" >Login</a>
-  //           </div>
-  //           </>
-  //         )}
-  // />
-  // )
-
-//   return(
-//     <Card
-//       key={name}
-//       txtcolor="black"
-//       header={info()}
-//       title={dollar()}
-//       body={
-//         <div>
-//           <h5>{name}'s Transactions:</h5>
-
-//           {trans.map((vary, i) => (
-//             <p key={i}>{vary}</p>
-//           ))}
-                     
-//         </div>
-//       }/>    
-//   )
-// }
   function users() {
-    if(data != null){
+    if(liveUser !== null){
     return(
       <Card
         bgcolor="white"
@@ -144,9 +58,9 @@ function AllData(){
         title={dollar()}
         body={
           <div>
-            <h5>{data[0].name}'s Transactions:</h5>
+            <h5>{liveUser.name}'s Transactions:</h5>
 
-            {data[0].trans.map((vary, i) => (
+            {liveUser.trans.map((vary, i) => (
               <p key={i}>{vary}</p>
             ))}
                        
