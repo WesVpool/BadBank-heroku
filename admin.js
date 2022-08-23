@@ -1,6 +1,6 @@
 const admin = require('firebase-admin');
 const dotenv = require("dotenv");
-dotenv.config({path: "./config.env"});
+dotenv.config({path: "./.env"});
 const serviceAccount = JSON.parse(process.env.GOOGLE_CREDS);
 
 admin.initializeApp({
