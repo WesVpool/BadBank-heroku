@@ -1,12 +1,12 @@
 function Withdraw(){
-  const ctx = React.useContext(UserContext);
+  const currentUser = React.useContext(UserContext).currentUser;
   const action = "WITHDRAW"
   const [data, setData]         = React.useState('');
   const [show, setShow]         = React.useState(true);
   const [status, setStatus]     = React.useState('');
   const [email, setEmail]       = React.useState(()=>{
-    if(ctx.users[0] !== undefined){
-    return ctx.users[0].email}});
+    if(currentUser[0] !== undefined){
+    return currentUser[0].email}});
   const [name, setName]         = React.useState('');
   const [amount, setAmount]     = React.useState('');
   const [balance, setBalance]   = React.useState('');
@@ -64,7 +64,6 @@ function Withdraw(){
         try {
             // const data = JSON.parse(text);
             setBalance(user.value.balance);
-            // ctx.users.splice(0,1,user.value);
             setStatus('')
             setShow(false);
             console.log('JSON:', user.value.balance);

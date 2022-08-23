@@ -1,13 +1,13 @@
 function AllData(){
-  const ctx = React.useContext(UserContext);
+  const currentUser = React.useContext(UserContext).currentUser;
   const [data, setData]         = React.useState(null);
   const [show, setShow]         = React.useState(true);
   const [status, setStatus]     = React.useState('');
   const [amount, setAmount]     = React.useState('');
 
   const [email, setEmail]       = React.useState(()=>{
-    if(ctx.users[0] !== undefined){
-    return ctx.users[0].email}});
+    if(currentUser[0] !== undefined){
+    return currentUser[0].email}});
 
   // const [name, setName]         = React.useState(()=>{
   //   if(data !== null){

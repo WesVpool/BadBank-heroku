@@ -1,15 +1,19 @@
 function Deposit(){
-  const ctx = React.useContext(UserContext);
+  const currentUser = React.useContext(UserContext).currentUser;
   const action = "DEPOSIT"
   const [data, setData]         = React.useState('');
   const [show, setShow]         = React.useState(true);
   const [status, setStatus]     = React.useState('');
   const [email, setEmail]       = React.useState(()=>{
-    if(ctx.users[0] !== undefined){
-    return ctx.users[0].email}});
-  const [name, setName]         = React.useState('');
+    if(currentUser[0] !== undefined){
+    return currentUser[0].email}});
+  const [name, setName]         = React.useState(()=>{
+    if(currentUser[0] !== undefined){
+    return currentUser[0].name}});
   const [amount, setAmount]     = React.useState('');
-  const [balance, setBalance]   = React.useState('');
+  const [balance, setBalance]   = React.useState(()=>{
+    if(currentUser[0] !== undefined){
+    return currentUser[0].balance}});
 
   if(email == null){
     return(
@@ -19,18 +23,18 @@ function Deposit(){
       </div>)
   };
 
-  React.useEffect(() => {
+  // React.useEffect(() => {
         
-    // fetch all accounts from API
-    fetch(`/account/find/${email}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            setBalance(data[0].balance);
-            setName(data[0].name);               
-        });
+  //   // fetch all accounts from API
+  //   fetch(`/account/find/${email}`)
+  //       .then(response => response.json())
+  //       .then(data => {
+  //           console.log(data);
+  //           setBalance(data[0].balance);
+  //           setName(data[0].name);               
+  //       });
 
-  }, []);
+  // }, []);
 
   function validate(field) {
     if (!Number(field)) {
@@ -60,7 +64,7 @@ function Deposit(){
         try {
             // const data = JSON.parse(text);
             setBalance(user.value.balance);
-            // ctx.users.splice(0,1,user.value);
+            currentUser.splice(0,1,user.value);
             setShow(false);
             console.log('JSON:', user.value.balance);
         } catch(err) {

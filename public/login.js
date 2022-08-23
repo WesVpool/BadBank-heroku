@@ -1,12 +1,21 @@
-
 function Login(){
-  const [show, setShow]         = React.useState(true);
+  const auth = firebase.auth();
+  const user = auth.currentUser;
+  
+  const currentUser = React.useContext(UserContext).currentUser; 
+  const [show, setShow]         = React.useState(user === null);
   const [status, setStatus]     = React.useState('');
-  const [name, setName]         = React.useState('');
-  const [email, setEmail]       = React.useState('');
+  const [name, setName]         = React.useState(()=>{
+    if(user !== null){
+    return currentUser[0].name}});
+  const [email, setEmail]       = React.useState(()=>{
+    if(user !== null){
+    return currentUser[0].name}});
   const [password, setPassword] = React.useState('');
   const [data, setData] = React.useState('');
-  const ctx = React.useContext(UserContext); 
+  
+
+  // console.log(currentUser);
 
   function validate(field, label){
     if (!field) {
@@ -15,35 +24,53 @@ function Login(){
       return false;
     }
     return true;
-}
-function clearForm(){
-  setName('');
-  setEmail('');
-  setPassword('');
-  setShow(true);
-  ctx.users.splice(0,1);
-}
+  }
+  function clearForm(){
+    setName('');
+    setEmail('');
+    setPassword('');
+    setShow(true);
+    currentUser.splice(0,1);
+    auth.signOut();
+  }
 
   function userLogin(){
     console.log(email,password);
     if (!validate(email,    'email'))    return;
     if (!validate(password, 'password')) return;
-    fetch(`/account/login/${email}/${password}`)
-    .then(response => response.text())
-    .then(text => {
-        try {
-            const user = JSON.parse(text);
-            ctx.users.splice(0,1,user);
-            setStatus('');
-            setShow(false);
-            setName(user.name);
-            console.log('JSON:', user);
-        } catch(err) {
-            setStatus(text)
-            console.log('err:', text);
-        }
-    });
-  }
+    // const promise = 
+    auth.signInWithEmailAndPassword(
+      email,
+      password)
+      .then((userCredential) => {
+        // Signed in 
+        // const user = userCredential.user;
+        // console.log(user);
+        // setShow(false);
+        const url = `/account/login/${email}/${password}`;
+        fetch(url)
+        .then(response => response.text())
+        .then(text => {
+            try {
+                const user = JSON.parse(text);
+                currentUser.splice(0,1,user);
+                setStatus('');
+                setShow(false);
+                setName(user.name)
+                console.log('JSON:', user);
+            } catch(err) {
+                setStatus(text)
+                console.log('err:', text);
+            }
+        });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode + errorMessage);
+        setStatus(errorMessage);
+      });
+    }
  
   
   return (

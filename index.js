@@ -3,7 +3,26 @@ var app     = express();
 var cors    = require('cors');
 var dal     = require('./dal.js');
 const e = require('express');
+const admin   = require('./admin');
+// const { initializeApp } = require("firebase/app");
+// const { 
+//     getAuth, 
+//     signInWithEmailAndPassword,
+//     createUserWithEmailAndPassword,
+//     signOut}
+//      = require("firebase/auth");
 
+// const firebaseConfig = {
+//   apiKey: "AIzaSyB6qId9twmHg9_wkWPlahdpKsAqMBdS4QU",
+//   authDomain: "badbankher-mon-auth.firebaseapp.com",
+//   projectId: "badbankher-mon-auth",
+//   storageBucket: "badbankher-mon-auth.appspot.com",
+//   messagingSenderId: "979789398878",
+//   appId: "1:979789398878:web:c142da40682d38275745cf"
+// };
+
+// const apps = initializeApp(firebaseConfig);
+// const auth = getAuth(apps);
 
 // used to serve static files from public directory
 app.use(express.static('public'));
@@ -11,7 +30,6 @@ app.use(cors());
 
 // create user account
 app.get('/account/create/:name/:email/:password', function (req, res) {
-
     // check if account exists
     dal.find(req.params.email).
         then((users) => {
@@ -81,7 +99,28 @@ app.get('/account/findOne/:email', function (req, res) {
 
 // update - deposit/withdraw amount
 app.get('/account/update/:email/:amount/:action', function (req, res) {
-
+    // read token from header
+    const idToken = req.headers.authorization
+    console.log('header:', idToken);
+    
+    if (!idToken) {
+      res.status(401).send();
+      return
+    } 
+    //check, did they pass us the token?
+    //if not, do a 401 error
+    //check if verify id token was successful
+    //if not, do 401
+    
+    //verify token, is this token valid?
+    admin.auth().verifyIdToken(idToken)
+        .then(function(decodedToken) {
+            console.log('decodedToken:',decodedToken);
+            res.send('Authentication Success!');
+        }).catch(function(error) {
+            console.log('error:', error);
+            res.status(401).send("Token invalid!");
+        });
     var amount = Number(req.params.amount);
     const pos = amount > 0 ? amount : -(amount);
     var trans  = `$${pos} ${req.params.action} to/from account`;
@@ -95,7 +134,28 @@ app.get('/account/update/:email/:amount/:action', function (req, res) {
 
 // all accounts
 app.get('/account/all', function (req, res) {
+    // read token from header
+    const idToken = req.headers.authorization
+    console.log('header:', idToken);
 
+    if (!idToken) {
+      res.status(401).send();
+      return
+    } 
+    //check, did they pass us the token?
+    //if not, do a 401 error
+    //check if verify id token was successful
+    //if not, do 401
+
+    //verify token, is this token valid?
+    admin.auth().verifyIdToken(idToken)
+        .then(function(decodedToken) {
+            console.log('decodedToken:',decodedToken);
+            res.send('Authentication Success!');
+        }).catch(function(error) {
+            console.log('error:', error);
+            res.status(401).send("Token invalid!");
+        });
     dal.all().
         then((docs) => {
             console.log(docs);

@@ -1,6 +1,6 @@
+// dotenv config.env for local server only
 const dotenv = require("dotenv");
 dotenv.config({path: "./config.env"});
-// const MongoClient = require('mongodb').MongoClient;
 const { MongoClient } = require("mongodb");
 const uri = process.env.MONGODB_URI;
 let db = null;

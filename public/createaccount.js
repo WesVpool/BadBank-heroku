@@ -1,9 +1,11 @@
 function CreateAccount(){
+
   const [show, setShow]         = React.useState(true);
   const [status, setStatus]     = React.useState('');
   const [name, setName]         = React.useState('');
   const [email, setEmail]       = React.useState('');
   const [password, setPassword] = React.useState('');
+  const currentUser = React.useContext(UserContext).currentUser;
 
   function validate(field, label){
       if (!field || field.replaceAll(" ","").length == 0) {
@@ -31,22 +33,41 @@ function CreateAccount(){
     if (!validate(email,    'email'))    return;
     if (!validate(password, 'password')) return;
     if (!validatePass(password, 'password')) return;
-    const url = `/account/create/${name}/${email}/${password}`;
-    fetch(url)
-    .then(response => response.text())
-    .then(text => {
-        try {
-            const user = JSON.parse(text);
-            setStatus('');
-            setShow(false);
-            console.log('JSON:', user);
-        } catch(err) {
-            setStatus(text)
-            console.log('err:', text);
-        }
-    });
-    
-  }    
+    const auth = firebase.auth();
+    auth.signOut();
+    currentUser.splice(0,1);
+    const promise = 
+    auth.createUserWithEmailAndPassword(
+      email,
+      password)
+      .then((userCredential) => {
+        // Signed in 
+        // const user = userCredential.user;
+        // console.log(user);
+        // setShow(false);
+        const url = `/account/create/${name}/${email}/${password}`;
+        fetch(url)
+        .then(response => response.text())
+        .then(text => {
+            try {
+                const user = JSON.parse(text);
+                currentUser.splice(0,1,user);
+                setStatus('');
+                setShow(false);
+                console.log('JSON:', user);
+            } catch(err) {
+                setStatus(text)
+                console.log('err:', text);
+            }
+        });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode + errorMessage);
+        setStatus(errorMessage);
+      });
+    } 
 
   function clearForm(){
     setName('');
@@ -96,7 +117,7 @@ function CreateAccount(){
 
                 <button type="submit" 
                   className="btn btn-light" 
-                  onClick={handleCreate} 
+                  onClick={e => handleCreate()} 
                   disabled={emptyInput()}>Create Account</button>
               </>
             ):(

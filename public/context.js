@@ -3,6 +3,22 @@ const Link = ReactRouterDOM.Link;
 const HashRouter = ReactRouterDOM.HashRouter;
 const UserContext = React.createContext(null);
 
+const firebaseConfig = {
+  apiKey: "AIzaSyB6qId9twmHg9_wkWPlahdpKsAqMBdS4QU",
+  authDomain: "badbankher-mon-auth.firebaseapp.com",
+  projectId: "badbankher-mon-auth",
+  storageBucket: "badbankher-mon-auth.appspot.com",
+  messagingSenderId: "979789398878",
+  appId: "1:979789398878:web:c142da40682d38275745cf"
+};
+
+// Initialize Firebase
+if (firebase.apps.length === 0) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const user = firebase.auth().currentUser;
+
 function Card(props) {
   function classes() {
     const bg = props.bgcolor ? " bg-" + props.bgcolor : " ";
