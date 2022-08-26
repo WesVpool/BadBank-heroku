@@ -70,12 +70,9 @@ function Login(){
       auth.signInWithEmailAndPassword(
       email,
       password)
-      // .then((result) => {
-      //   return result.user.updateProfile({
-      //     displayName: name
-      //   })
-      // })
       .then((userCred) => {
+        setLogin(true);
+        setName(auth.currentUser.displayName);
         auth.currentUser.getIdToken()
         .then(idToken => {
           console.log("idToken:", idToken);
@@ -89,11 +86,10 @@ function Login(){
           .then(text => {
               try {
                 const data = JSON.parse(text);
-                // liveUserLog.splice(0,1,data);
-                window.sessionStorage.setItem("liveUser", JSON.stringify(data));
+                window.sessionStorage.setItem("liveUser", text);
                 setName(data.name);
                 setStatus('');
-                setShow(false);
+                // setShow(false);
                 console.log('JSON:', data.name);
               } catch(err) {
                 setStatus('Account Login Failed. Please Try Again');
@@ -110,6 +106,7 @@ function Login(){
       });
       });
     }
+
   return (
     <Card
     bgcolor="primary"

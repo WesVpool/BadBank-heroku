@@ -71,12 +71,12 @@ function CreateAccount(){
       auth.createUserWithEmailAndPassword(
       email,
       password)
-      // .then((result) => {
-      //   setShow(false);
-      //   result.user.updateProfile({
-      //     displayName: name
-      //   });
-      // })
+      .then((result) => {
+        setShow(false);
+        result.user.updateProfile({
+          displayName: name
+        });
+      })
       .then((userCred) => {
         auth.currentUser.getIdToken()
         .then(idToken => {
@@ -91,7 +91,7 @@ function CreateAccount(){
           .then(text => {
               try {
                 const data = JSON.parse(text);   
-                window.sessionStorage.setItem("liveUser", JSON.stringify(data));           
+                window.sessionStorage.setItem("liveUser", text);           
                 setStatus('');    
                 console.log('JSON:', data);
               } catch(err) {
