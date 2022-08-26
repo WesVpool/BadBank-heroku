@@ -16,7 +16,7 @@ MongoClient.connect(uri, {useUnifiedTopology: true}, function(err, client) {
 function create(name, email, password) {
     return new Promise((resolve, reject) => {
         const collection = db.collection('users');
-        const doc = {name, email, password, balance: 100, trans:["Initial Account Balance $100"]};
+        const doc = {name, email, password, balance: 100, trans:["$100 Initial Account Balance"]};
         collection.insertOne(doc, {w:1}, function(err, result) {
             err ? reject(err) : resolve(doc);
         });
@@ -67,6 +67,38 @@ function update(email, amount, trans){
     });    
 }
 
+// transfer - tranfser between 2 accounts
+function transfer(fromEmail, toEmail, amount, fromTrans, toTrans){
+    return new Promise((resolve, reject) => {    
+        const toCustomer = db
+            .collection('users')            
+            .findOneAndUpdate(
+                {email: toEmail},
+                { $inc:  { balance: amount},
+                  $push: { trans: toTrans}                
+                }
+                // { upsert: true,
+                //   returnDocument: 'after' },
+                // function (err, documents) {
+                //     err ? reject(err) : resolve("SUCCESS");
+                // }
+            );
+        const fromCustomer = db
+            .collection('users') 
+            .findOneAndUpdate(
+                {email: fromEmail},
+                { $inc:  { balance: -(amount)},
+                  $push: { trans: fromTrans}                
+                },
+                { upsert: true,
+                  returnDocument: 'after' },
+                function (err, documents) {
+                    err ? reject(err) : resolve(documents);
+                }           
+            )
+
+    });    
+}
 // all users
 function all(){
     return new Promise((resolve, reject) => {
@@ -79,4 +111,4 @@ function all(){
     })
 }
 
-module.exports = {create, findOne, find, update, all};
+module.exports = {create, findOne, find, update, transfer, all};

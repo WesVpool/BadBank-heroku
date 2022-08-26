@@ -1,12 +1,42 @@
 function CreateAccount(){
   const auth = firebase.auth();
   const user = auth.currentUser;
-  const [show, setShow]         = React.useState(true);
+  const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
+  const [show, setShow]         = React.useState('');
+  const [login, setLogin]       = React.useState('');
   const [status, setStatus]     = React.useState('');
   const [name, setName]         = React.useState('');
   const [email, setEmail]       = React.useState('');
   const [password, setPassword] = React.useState('');
-  // const liveUser = React.useContext(UserContext).liveUser;
+  const [data, setData] = React.useState('');
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      setShow(false);
+      setLogin(true);
+    } else {
+      setShow(true);
+      setLogin(false);
+    }
+  }); 
+
+  React.useEffect(() => {
+    // console.log(liveUser);
+    if (liveUser !== null){
+      setName(liveUser.name);
+      setLogin(true);
+    };
+    if (login === true){
+      const navUser = document.getElementById("login");
+      navUser.textContent = `Signed in as ${name}`;
+      navUser.title = "Logout of your account!";
+    } else {
+      const navUser = document.getElementById("login");
+      navUser.textContent = "Login";
+      navUser.title = "Login of your account!";
+    }
+
+  }, [login]);
 
   function validate(field, label){
       if (!field || field.replaceAll(" ","").length == 0) {
@@ -35,17 +65,18 @@ function CreateAccount(){
     if (!validate(password, 'password')) return;
     if (!validatePass(password, 'password')) return;
     auth.signOut();
-    // liveUser.splice(0,1);
+    console.log(name);
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
       .then(() => {
       auth.createUserWithEmailAndPassword(
       email,
       password)
-      .then((result) => {
-        return result.user.updateProfile({
-          displayName: name
-        })
-      })
+      // .then((result) => {
+      //   setShow(false);
+      //   result.user.updateProfile({
+      //     displayName: name
+      //   });
+      // })
       .then((userCred) => {
         auth.currentUser.getIdToken()
         .then(idToken => {
@@ -59,11 +90,9 @@ function CreateAccount(){
           .then(response => response.text())
           .then(text => {
               try {
-                const data = JSON.parse(text);
-                // liveUser.splice(0,1,data);
-                window.sessionStorage.setItem("liveUser", JSON.stringify(data));
-                setStatus('');
-                setShow(false);
+                const data = JSON.parse(text);   
+                window.sessionStorage.setItem("liveUser", JSON.stringify(data));           
+                setStatus('');    
                 console.log('JSON:', data);
               } catch(err) {
                 setStatus('Account Creation Failed. Please Try Again');
@@ -78,36 +107,17 @@ function CreateAccount(){
         console.log(errorCode + errorMessage);
         setStatus(errorMessage);
       });
-      })
+      });
+  
 }
-        // .catch((e) => console.log("e:", e))
-  //       const url = `/account/create/${name}/${email}/${password}`;
-  //       fetch(url, {
-  //         method: 'GET',
-  //         headers: {
-  //             'Authorization': user
-  //         }})
-  //       .then(response => response.text())
-  //       .then(text => {
-  //           try {
-  //               const data = JSON.parse(text);
-  //               // liveUser.splice(0,1,data);
-  //               window.sessionStorage.setItem("liveUser", JSON.stringify(data));
-  //               setStatus('');
-  //               setShow(false);
-  //               console.log('JSON:', data);
-  //           } catch(err) {
-                // setStatus(text);
-                // console.log('err:', text);
-  //           }
-  //       });
-
 
   function clearForm(){
     setName('');
     setEmail('');
     setPassword('');
     setShow(true);
+    auth.signOut();
+    window.sessionStorage.clear();
   }
 
   function emptyInput(){
@@ -151,7 +161,7 @@ function CreateAccount(){
 
                 <button type="submit" 
                   className="btn btn-light" 
-                  onClick={e => handleCreate()} 
+                  onClick={e => handleCreate(e)} 
                   disabled={emptyInput()}>Create Account</button>
               </>
             ):(

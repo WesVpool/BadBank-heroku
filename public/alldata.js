@@ -4,6 +4,7 @@ function AllData(){
   
   const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
   const [login, setLogin]       = React.useState('');
+  const [show, setShow]       = React.useState(true);
 
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
@@ -13,7 +14,7 @@ function AllData(){
     }
   }); 
 
-  if(login === false){
+  if(liveUser === null){
     return(
       <div>
         <h5>USER NOT LOGGED IN!</h5>
@@ -35,7 +36,12 @@ function AllData(){
   // }, []);
 
   function dollar () {
-    return `Current Balance: $${liveUser.balance}`;
+    // return `Current Balance: $${liveUser.balanc}`;
+    return(
+      <div>
+        <h5 className="fw-bold">Current Balance: ${liveUser.balance}</h5>
+      </div>
+    )
   }
 
   function info () {
@@ -48,34 +54,50 @@ function AllData(){
     )
   }
 
-  function users() {
-    if(liveUser !== null){
-    return(
-      <Card
-        bgcolor="white"
-        txtcolor="black"
-        header={info()}
-        title={dollar()}
-        body={
-          <div>
-            <h5>{liveUser.name}'s Transactions:</h5>
+  // function users() {
+  //   if(liveUser !== null){
+  //   return(
+  //     <Card
+  //       bgcolor="white"
+  //       txtcolor="black"
+  //       header={info()}
+  //       title={dollar()}
+  //       body={
+  //         <div>
+  //           <h5>{liveUser.name}'s Transactions:</h5>
 
-            {liveUser.trans.map((vary, i) => (
-              <p key={i}>{vary}</p>
-            ))}
+  //           {liveUser.trans.map((vary, i) => (
+  //             <p key={i}>{vary}</p>
+  //           ))}
                        
-          </div>
-        }/>    
-    )}
-    }
+  //         </div>
+  //       }/>    
+  //   )}
+  //   }
  
   return (
-    <>
-    <h3>Account Information</h3>
-    <br/>
-    <div>
-      {users()}
-    </div>
-    </>
+    <Card
+      bgcolor="white"
+      txtcolor="black"
+      header={info()}
+      title={dollar()}
+      body={show ? (  
+            <div>
+
+              <button type="submit" className="btn btn-dark" onClick={() => setShow(false)}>Show Transactions</button>
+
+
+            </div>
+          ):(
+            <div>
+              <button type="submit" className="btn btn-dark" style={{marginBottom: 10+'px'}} onClick={() => setShow(true)}>Hide Transactions</button>
+              <h5>{liveUser.name}'s Transactions:</h5>
+              {liveUser.trans.map((vary, i) => (
+                <p key={i}>{vary}</p>
+              ))}
+                       
+            </div>
+          )}
+  />
   )
 }

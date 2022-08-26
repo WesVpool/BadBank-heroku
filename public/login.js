@@ -1,32 +1,45 @@
 function Login(){
-  // const liveUser = React.useContext(UserContext).liveUser;
   const auth = firebase.auth();
   const user = auth.currentUser;
+  const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"))
   const [show, setShow]         = React.useState('');
-  const [login, setLogin]         = React.useState('');
+  const [login, setLogin]       = React.useState('');
+  const [status, setStatus]     = React.useState('');
+  const [name, setName]         = React.useState('');
+  const [email, setEmail]       = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [data, setData]         = React.useState('');
+
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setShow(false);
       setLogin(true);
-      setName(user.displayName);
-      setEmail(user.email);
+      // setName(liveUserLog.name);
+      // setEmail(user.email);
     } else {
       setShow(true);
       setLogin(false);
     }
   }); 
   
-  const [status, setStatus]     = React.useState('');
-  const [name, setName]         = React.useState('');
-  const [email, setEmail]       = React.useState('');
-    // ()=>{
-    // if(login === true){
-    // return user.email}});
-  const [password, setPassword] = React.useState('');
-  const [data, setData] = React.useState('');
-  
+  React.useEffect(() => {
+    // console.log(liveUserLog);
+    if (liveUser !== null){
+      setName(liveUser.name);
+      setLogin(true);
+    };
+    if (login === true){
+      const navUser = document.getElementById("login");
+      navUser.textContent = `Signed in as ${name}`;
+      navUser.title = "Logout of your account!";
+    } else {
+      const navUser = document.getElementById("login");
+      navUser.textContent = "Login";
+      navUser.title = "Login of your account!";
+    } 
+  }, [name]);
 
-  // console.log(liveUser);
+  console.log(liveUser);
 
   function validate(field, label){
     if (!field) {
@@ -41,8 +54,11 @@ function Login(){
     setEmail('');
     setPassword('');
     setShow(true);
-    // liveUser.splice(0,1);
+    setLogin(false);
+    // liveUserLog.splice(0,1);
     auth.signOut();
+    sessionStorage.clear();
+    console.log(liveUser)
   }
 
   function userLogin(){
@@ -73,11 +89,12 @@ function Login(){
           .then(text => {
               try {
                 const data = JSON.parse(text);
-                // liveUser.splice(0,1,data);
+                // liveUserLog.splice(0,1,data);
                 window.sessionStorage.setItem("liveUser", JSON.stringify(data));
+                setName(data.name);
                 setStatus('');
                 setShow(false);
-                console.log('JSON:', data);
+                console.log('JSON:', data.name);
               } catch(err) {
                 setStatus('Account Login Failed. Please Try Again');
                 console.log('err:', text);
@@ -91,46 +108,8 @@ function Login(){
         console.log(errorCode + errorMessage);
         setStatus(errorMessage);
       });
-      })
-}
-  //   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
-  //     .then(() => {
-  //     auth.signInWithEmailAndPassword(
-  //     email,
-  //     password)
-  //     .then((userCredential) => {
-  //       // Signed in 
-  //       // const user = userCredential.user;
-  //       // console.log(user);
-  //       // setShow(false);
-  //       const url = `/account/login/${email}/${password}`;
-  //       fetch(url)
-  //       .then(response => response.text())
-  //       .then(text => {
-  //           try {
-  //               const data = JSON.parse(text);
-  //               // liveUser.splice(0,1,data);
-  //               window.sessionStorage.setItem("liveUser", JSON.stringify(data));
-  //               setStatus('');
-  //               setShow(false);
-  //               setName(data.name)
-  //               console.log('JSON:', data);
-  //           } catch(err) {
-  //               setStatus(text)
-  //               console.log('err:', text);
-  //           }
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       const errorCode = error.code;
-  //       const errorMessage = error.message;
-  //       console.log(errorCode + errorMessage);
-  //       setStatus(errorMessage);
-  //     });
-  //   })
-  // }
- 
-  
+      });
+    }
   return (
     <Card
     bgcolor="primary"
@@ -152,4 +131,4 @@ function Login(){
           )}
   />
 )
-}
+  }

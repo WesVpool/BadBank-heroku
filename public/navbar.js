@@ -1,4 +1,45 @@
 function NavBar() {
+  const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
+  const [show, setShow]         = React.useState('');
+  const [login, setLogin]       = React.useState('');
+  const [status, setStatus]     = React.useState('');
+  const [name, setName]         = React.useState('');
+  const [email, setEmail]       = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [data, setData]         = React.useState('');
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+      setLogin(false)}
+  }); 
+
+  React.useEffect(() => {
+    console.log(liveUser);
+    if (liveUser !== null){
+      setName(liveUser.name);
+      setLogin(true);
+    };
+    if (login === true){
+      const navUser = document.getElementById("login");
+      navUser.textContent = `Signed in as ${name}`;
+      navUser.title = "Logout of your account!";
+    } else {
+      const navUser = document.getElementById("login");
+      navUser.textContent = "Login";
+      navUser.title = "Login of your account!";
+    }
+  }, [login]);
+
+  React.useEffect(() => {
+    const old = document.getElementsByClassName("nav-link active");
+    old.className = "nav-link"
+    let active = window.location.hash.replace(/[#/]/g, "").toLowerCase();
+    if (active === ""){
+      active = "home"
+    }
+    const id = document.getElementById(active);
+    id.className = "nav-link active"
+  }, []);
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -18,38 +59,47 @@ function NavBar() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <a className="nav-link" data-toggle="tooltip" data-placement="bottom" title="Back to the Homepage!" href="#/">
+                <a className="nav-link" id="home" data-toggle="tooltip" data-placement="bottom" title="Back to the Homepage!" href="#/" onClick={e => active(e)}>
                   Home
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" data-toggle="tooltip" data-placement="bottom" title="Create a new account!" href="#/CreateAccount/">
+                <a className="nav-link" id="createaccount" data-toggle="tooltip" data-placement="bottom" title="Create a new account!" href="#/CreateAccount/" onClick={e => active(e)}>
                   Create Account
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" data-toggle="tooltip" data-placement="bottom" title="Login to your account!" href="#/login/">
-                  Login
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" data-toggle="tooltip" data-placement="bottom" title="Deposit money to your account!" href="#/deposit/">
+                <a className="nav-link" id="deposit"data-toggle="tooltip" data-placement="bottom" title="Deposit money to your account!" href="#/Deposit/" onClick={e => active(e)}>
                   Deposit
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" data-toggle="tooltip" data-placement="bottom" title="Withdraw money from your account!" href="#/withdraw/">
+                <a className="nav-link" id="withdraw" data-toggle="tooltip" data-placement="bottom" title="Withdraw money from your account!" href="#/Withdraw/" onClick={e => active(e)}>
                   Withdraw
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" data-toggle="tooltip" data-placement="bottom" title="All users information" href="#/alldata/">
+                <a className="nav-link" id="transfer" data-toggle="tooltip" data-placement="bottom" title="Send money to another person!" href="#/Transfer/" onClick={e => active(e)}>
+                  Transfer
+                </a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" id="alldata" data-toggle="tooltip" data-placement="bottom" title="Account Information" href="#/Alldata/" onClick={e => active(e)}>
                   AllData
                 </a>
               </li>
             </ul>
+            <span>
+              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                <li className="nav-item">
+                 <a className="nav-link" id="login" data-toggle="tooltip" data-placement="bottom" title="Login to your account!" href="#/Login/" onClick={e => active(e)}>
+                   Login
+                  </a>
+                </li>
+              </ul>
+            </span>
           </div>
         </div>
       </nav>

@@ -2,9 +2,8 @@ const Route = ReactRouterDOM.Route;
 const Link = ReactRouterDOM.Link;
 const HashRouter = ReactRouterDOM.HashRouter;
 const UserContext = React.createContext(null);
-// import { config } from "dotenv";
-// config({path: "./config.env"});
-// const apptoken = process.env.BADBANK_TOKEN;
+
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyB6qId9twmHg9_wkWPlahdpKsAqMBdS4QU",
@@ -20,7 +19,13 @@ if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
 }
 
-
+function active(e) {
+  var el = document.querySelector('.active');
+  if(el) {
+    el.classList.remove('active');
+  }
+  e.target.classList.add('active');
+}
 
 function Card(props) {
   function classes() {
