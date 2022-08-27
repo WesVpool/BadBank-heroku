@@ -1,49 +1,36 @@
 function Deposit(){
   const auth = firebase.auth();
-  const user = auth.currentUser;
   // const liveUser = React.useContext(UserContext).liveUser;
   const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
-  const action = "DEPOSIT"
+  const action = "DEPOSIT";
+
   const [data, setData]         = React.useState('');
   const [show, setShow]         = React.useState(true);
   const [login, setLogin]       = React.useState('');
   const [status, setStatus]     = React.useState('');
   const [email, setEmail]       = React.useState('');
-  const [name, setName]         = React.useState('');
+  const [name, setName]         = React.useState(liveUser === null ? "" : liveUser.name);
   const [amount, setAmount]     = React.useState('');
-  const [balance, setBalance]   = React.useState('');
+  const [balance, setBalance]   = React.useState(liveUser === null ? "" : liveUser.balance);
   
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setLogin(true);
-      setName(user.displayName);
+      // setName(liveUser.name);
       setEmail(user.email);
-      setBalance(liveUser.balance);
+      // setBalance(liveUser.balance);
     } else {
       setLogin(false);
     }
   }); 
 
-  if(login === false){
-    return(
-      <div>
-        <h5>USER NOT LOGGED IN!</h5>
-          <a href="#/login/" className="btn btn-light" >Login</a>
-      </div>)
-  };
-
-  // React.useEffect(() => {
-        
-  //   // fetch all accounts from API
-  //   fetch(`/account/find/${email}`)
-  //       .then(response => response.json())
-  //       .then(data => {
-  //           console.log(data);
-  //           setBalance(data[0].balance);
-  //           setName(data[0].name);               
-  //       });
-
-  // }, []);
+  // if(login === false){
+  //   return(
+  //     <div>
+  //       <h5>USER NOT LOGGED IN!</h5>
+  //         <a href="#/login/" className="btn btn-light" onClick={e => active(e)}>Login</a>
+  //     </div>)
+  // };
 
   function validate(field) {
     if (!Number(field)) {
@@ -117,7 +104,15 @@ function Deposit(){
   // }
 
   const persHeader = `${name}, Make A Deposit`
-  return (
+
+  return liveUser === null ? (
+
+    <div>
+      <h5>USER NOT LOGGED IN!</h5>
+      <a href="#/login/" className="btn btn-light" onClick={e => active(e)}>Login</a>
+    </div>
+    
+    ) : (
     <Card
     bgcolor="success"
     header= {persHeader}

@@ -8,16 +8,16 @@ function Transfer(){const auth = firebase.auth();
   const [status, setStatus]     = React.useState('');
   const [email, setEmail]       = React.useState('');
   const [eTrans, setETrans]     = React.useState('');
-  const [name, setName]         = React.useState('');
+  const [name, setName]         = React.useState(liveUser === null ? "" : liveUser.name);
   const [amount, setAmount]     = React.useState('');
-  const [balance, setBalance]   = React.useState('');
+  const [balance, setBalance]   = React.useState(liveUser === null ? "" : liveUser.balance);
   
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setLogin(true);
-      setName(user.displayName);
-      // setEmail(user.email);
-      setBalance(liveUser.balance);
+      // setName(liveUser.name);
+      setEmail(user.email);
+      // setBalance(liveUser.balance);
     } else {
       setLogin(false);
     }
@@ -27,7 +27,7 @@ function Transfer(){const auth = firebase.auth();
     return(
       <div>
         <h5>USER NOT LOGGED IN!</h5>
-          <a href="#/login/" className="btn btn-light" >Login</a>
+          <a href="#/login/" className="btn btn-light" onClick={e => active(e)}>Login</a>
       </div>)
   };
 
@@ -82,46 +82,44 @@ function Transfer(){const auth = firebase.auth();
                 'Authorization': idToken
             }
           })
-          .then(response => response.json())
-          .then(data => {
-              try {
-                  // const data = JSON.parse(text);
+          .then(response => response.text())
+          .then(text => {
+            console.log(text);
+              try { 
+                  const data = JSON.parse(text);
                   setBalance(data.value.balance);
                   // liveUser.splice(0,1,data.value);
                   window.sessionStorage.setItem("liveUser", JSON.stringify(data.value));
                   setShow(false);
-                  console.log('JSON:', data.value.balance);
+                  setStatus('');
+                  console.log('JSON:', liveUser);
               } catch(err) {
-                  setStatus('Transfer failed')
-                  console.log('err:', data.value);
+                  setStatus('Transfer failed: '+text)
+                  console.log('err:', text);
               }
           });
         })
-        .catch((e) => console.log("e:", e));
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode + errorMessage);
+          setStatus(errorMessage);
+        });
     } else {
       console.warn("There is currently no logged in user.");
     }
   }
-  // function handleTransfer(){
-  //   if (!validate(amount, "amount")) return;
-    // fetch(`/account/transfer/${email}/${amount}/${action}`)
-    // .then(response => response.json())
-    // .then(user => {
-    //     try {
-    //         // const data = JSON.parse(text);
-    //         setBalance(user.value.balance);
-    //         currentUser.splice(0,1,user.value);
-    //         setShow(false);
-    //         console.log('JSON:', user.value.balance);
-    //     } catch(err) {
-    //         setStatus('Transfer failed')
-    //         console.log('err:', user.value);
-    //     }
-    // });
-  // }
 
   const persHeader = `${name}, Make A Transfer`
-  return (
+
+  return liveUser === null ? (
+
+    <div>
+      <h5>USER NOT LOGGED IN!</h5>
+      <a href="#/login/" className="btn btn-light" onClick={e => active(e)}>Login</a>
+    </div>
+    
+    ) : (
     <Card
     bgcolor="success"
     header= {persHeader}

@@ -171,6 +171,7 @@ app.get('/account/update/:email/:amount/:action', function (req, res) {
  
 });
 
+
 // Transfer - transfer money to another account
 app.get('/account/transfer/:toEmail/:amount', function (req, res) {
     // read token from header
@@ -191,45 +192,89 @@ app.get('/account/transfer/:toEmail/:amount', function (req, res) {
         .then(function(decodedToken) {
             console.log('decodedToken:',decodedToken);
             var amount     = Number(req.params.amount);
-            var fromTrans  = `$${amount} TRANSFERED to ${req.params.toEmail}`
-            var toTrans    = `$${amount} RECEIVED from ${decodedToken.email}`
+            var fromTrans  = `$${amount} TRANSFERED to ${req.params.toEmail}`;
+            var toTrans    = `$${amount} RECEIVED from ${decodedToken.email}`;
+            
+            // check if account exists
+            dal.find(req.params.toEmail)
+                .then((user) => {
+                    console.log(`to email ${req.params.toEmail}`);
+                    // if user exists, return error message
+                    if(user.length <= 0){
+                        console.log('User does not exist');
+                        res.status(404).send('User does not exist');  
+                    }
+                    else{
+                        //transfer to
+                        dal.update(req.params.toEmail, amount, toTrans).
+                            then((response) => {
+                                console.log(response);
+                                // res.send(response);
+                        }); 
+                        dal.update(decodedToken.email, -(amount), fromTrans).
+                            then((response) => {
+                                console.log(response);
+                                res.send(response);
+                        });               
+                    }
+                })}).catch(function(error) {
+                    console.log('error:', error);
+                    res.status(401).send("Token invalid!");
+                });
+    });
 
-            dal.transfer(decodedToken.email, req.params.toEmail, amount, fromTrans, toTrans)
-                .then((response) => {
-                 console.log(response);
-                    res.send(response);
-                });   
-        }).catch(function(error) {
-            console.log('error:', error);
-            res.status(401).send("Token invalid!");
-        });
+
+
+
+
+
+
+// // Transfer - transfer money to another account
+// app.get('/account/transfer/:toEmail/:amount', function (req, res) {
+//     // read token from header
+//     const idToken = req.headers.authorization
+//     console.log('header:', idToken);
+    
+//     if (!idToken) {
+//         res.status(401).send('AUTHORIZATION DENIED');
+//         return
+//       } 
+//     //check, did they pass us the token?
+//     //if not, do a 401 error
+//     //check if verify id token was successful
+//     //if not, do 401
+    
+//     //verify token, is this token valid?
+//     admin.auth().verifyIdToken(idToken)
+//         .then(function(decodedToken) {
+//             console.log('decodedToken:',decodedToken);
+//             var amount     = Number(req.params.amount);
+//             var fromTrans  = `$${amount} TRANSFERED to ${req.params.toEmail}`
+//             var toTrans    = `$${amount} RECEIVED from ${decodedToken.email}`
+
+//             dal.transfer(decodedToken.email, req.params.toEmail, amount, fromTrans, toTrans)
+//                 .then((response) => {
+//                  console.log(response);
+//                     res.send(response);
+//                 });   
+//         }).catch(function(error) {
+//             console.log('error:', error);
+//             res.status(401).send("Token invalid!");
+//         });
+// });
+
+app.get('/test/findOne/:email', function (req, res) {
+
+    dal.findOne(req.params.email).
+        then((user) => {
+
+            // if user exists, return error message
+            if(user === null){
+                console.log('User does not exist');
+                res.send('User does not exist');    
+            }
 });
-
-
-
-// dal.findOne(req.params.toEmail)
-//                 .then((user) => {
-//                     var amount = Number(req.params.amount);
-//                     // const pos = amount > 0 ? amount : -(amount);
-//                     var trans  = `$${amount} RECEIVED from ${decodedToken.email}`;
-
-//                     dal.update(req.params.toEmail, amount, trans)
-//                         .then((response) => {
-//                             console.log(response);
-//                             // res.send(response);
-//                     })   
-//                 })
-//                 .then((cUser) => {
-//                     var amount = Number(req.params.amount);
-//                     const neg = -(amount);
-//                     var trans  = `$${amount} TRANSFERED to ${decodedToken.email}`;
-//                     dal.update(decodeToken.email, neg, trans)
-//                         .then((response) => {
-//                             console.log(response);
-//                             res.send(response);
-//                         });
-//                 });
-//             })    
+});
 
 
 

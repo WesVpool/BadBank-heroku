@@ -1,6 +1,5 @@
 function CreateAccount(){
   const auth = firebase.auth();
-  const user = auth.currentUser;
   const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
   const [show, setShow]         = React.useState('');
   const [login, setLogin]       = React.useState('');
@@ -9,6 +8,7 @@ function CreateAccount(){
   const [email, setEmail]       = React.useState('');
   const [password, setPassword] = React.useState('');
   const [data, setData] = React.useState('');
+  const randomNumber = Math.floor(Math.random()*greetArray.length);
 
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
@@ -28,7 +28,7 @@ function CreateAccount(){
     };
     if (login === true){
       const navUser = document.getElementById("login");
-      navUser.textContent = `Signed in as ${name}`;
+      navUser.textContent = `${greetArray[randomNumber]} ${name}!`;
       navUser.title = "Logout of your account!";
     } else {
       const navUser = document.getElementById("login");
@@ -72,7 +72,7 @@ function CreateAccount(){
       email,
       password)
       .then((result) => {
-        setShow(false);
+        // setShow(false);
         result.user.updateProfile({
           displayName: name
         });
@@ -92,7 +92,8 @@ function CreateAccount(){
               try {
                 const data = JSON.parse(text);   
                 window.sessionStorage.setItem("liveUser", text);           
-                setStatus('');    
+                setStatus('');   
+                setShow(false); 
                 console.log('JSON:', data);
               } catch(err) {
                 setStatus('Account Creation Failed. Please Try Again');
@@ -140,7 +141,7 @@ function CreateAccount(){
                   id="name" 
                   placeholder="Enter name" 
                   value={name} 
-                  onChange={e => setName(e.currentTarget.value)} /><br/>
+                  onChange={e => setName(capName(e.currentTarget.value))} /><br/>
 
                 Email address<br/>
                 <input type="input" 

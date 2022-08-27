@@ -1,6 +1,5 @@
 function Login(){
   const auth = firebase.auth();
-  const user = auth.currentUser;
   const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"))
   const [show, setShow]         = React.useState('');
   const [login, setLogin]       = React.useState('');
@@ -30,7 +29,7 @@ function Login(){
     };
     if (login === true){
       const navUser = document.getElementById("login");
-      navUser.textContent = `Signed in as ${name}`;
+      navUser.textContent = `${greetArray[randomNumber]} ${name}!`;
       navUser.title = "Logout of your account!";
     } else {
       const navUser = document.getElementById("login");
@@ -38,8 +37,6 @@ function Login(){
       navUser.title = "Login of your account!";
     } 
   }, [name]);
-
-  console.log(liveUser);
 
   function validate(field, label){
     if (!field) {

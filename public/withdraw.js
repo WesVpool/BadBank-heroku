@@ -9,28 +9,28 @@ function Withdraw(){
   const [login, setLogin]       = React.useState('');
   const [status, setStatus]     = React.useState('');
   const [email, setEmail]       = React.useState('');
-  const [name, setName]         = React.useState('');
+  const [name, setName]         = React.useState(liveUser === null ? "" : liveUser.name);
   const [amount, setAmount]     = React.useState('');
-  const [balance, setBalance]   = React.useState('');
+  const [balance, setBalance]   = React.useState(liveUser === null ? "" : liveUser.balance);
   
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setLogin(true);
-      setName(user.displayName);
+      // setName(liveUser.name);
       setEmail(user.email);
-      setBalance(liveUser.balance);
+      // setBalance(liveUser.balance);
     } else {
       setLogin(false);
     }
   }); 
 
-  if(login === false){
-    return(
-      <div>
-        <h5>USER NOT LOGGED IN!</h5>
-          <a href="#/login/" className="btn btn-light" >Login</a>
-      </div>)
-  };
+  // if(login === false){
+  //   return(
+  //     <div>
+  //       <h5>USER NOT LOGGED IN!</h5>
+  //         <a href="#/login/" className="btn btn-light" onClick={e => active(e)}>Login</a>
+  //     </div>)
+  // };
 
   // React.useEffect(() => {
         
@@ -126,7 +126,15 @@ function Withdraw(){
   // }}
 
   const persHeader = `${name}, Make A Withdraw`
-  return (
+
+  return liveUser === null ? (
+
+    <div>
+      <h5>USER NOT LOGGED IN!</h5>
+      <a href="#/login/" className="btn btn-light" onClick={e => active(e)}>Login</a>
+    </div>
+    
+    ) : (
     <Card
     bgcolor="danger"
     header= {persHeader}

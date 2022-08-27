@@ -14,13 +14,13 @@ function AllData(){
     }
   }); 
 
-  if(liveUser === null){
-    return(
-      <div>
-        <h5>USER NOT LOGGED IN!</h5>
-          <a href="#/login/" className="btn btn-light" >Login</a>
-      </div>)
-  };
+  // if(liveUser === null){
+  //   return(
+  //     <div>
+  //       <h5>USER NOT LOGGED IN!</h5>
+  //         <a href="#/login/" className="btn btn-light" >Login</a>
+  //     </div>)
+  // };
 
 
   // React.useEffect(() => {
@@ -75,7 +75,14 @@ function AllData(){
   //   )}
   //   }
  
-  return (
+  return liveUser === null ? (
+
+    <div>
+      <h5>USER NOT LOGGED IN!</h5>
+      <a href="#/login/" className="btn btn-light" onClick={e => active(e)}>Login</a>
+    </div>
+    
+    ) : (
     <Card
       bgcolor="white"
       txtcolor="black"

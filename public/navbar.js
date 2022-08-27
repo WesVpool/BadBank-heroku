@@ -7,6 +7,7 @@ function NavBar() {
   const [email, setEmail]       = React.useState('');
   const [password, setPassword] = React.useState('');
   const [data, setData]         = React.useState('');
+  
 
   firebase.auth().onAuthStateChanged((user) => {
     if (!user) {
@@ -21,7 +22,7 @@ function NavBar() {
     };
     if (login === true){
       const navUser = document.getElementById("login");
-      navUser.textContent = `Signed in as ${name}`;
+      navUser.textContent = `${greetArray[randomNumber]} ${name}!`;
       navUser.title = "Logout of your account!";
     } else {
       const navUser = document.getElementById("login");
@@ -31,8 +32,8 @@ function NavBar() {
   }, [login]);
 
   React.useEffect(() => {
-    const old = document.getElementsByClassName("nav-link active");
-    old.className = "nav-link"
+    // const old = document.getElementsByClassName("nav-link active");
+    // old.className = "nav-link"
     let active = window.location.hash.replace(/[#/]/g, "").toLowerCase();
     if (active === ""){
       active = "home"

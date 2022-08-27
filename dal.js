@@ -68,7 +68,7 @@ function update(email, amount, trans){
 }
 
 // transfer - tranfser between 2 accounts
-function transfer(fromEmail, toEmail, amount, fromTrans, toTrans){
+function transfer2(fromEmail, toEmail, amount, fromTrans, toTrans){
     return new Promise((resolve, reject) => {    
         const toCustomer = db
             .collection('users')            
@@ -76,12 +76,10 @@ function transfer(fromEmail, toEmail, amount, fromTrans, toTrans){
                 {email: toEmail},
                 { $inc:  { balance: amount},
                   $push: { trans: toTrans}                
+                },
+                function (err, docs) {
+                    err ? reject(err) : resolve(success);
                 }
-                // { upsert: true,
-                //   returnDocument: 'after' },
-                // function (err, documents) {
-                //     err ? reject(err) : resolve("SUCCESS");
-                // }
             );
         const fromCustomer = db
             .collection('users') 
@@ -90,12 +88,31 @@ function transfer(fromEmail, toEmail, amount, fromTrans, toTrans){
                 { $inc:  { balance: -(amount)},
                   $push: { trans: fromTrans}                
                 },
-                { upsert: true,
-                  returnDocument: 'after' },
+                {returnDocument: 'after' },
                 function (err, documents) {
                     err ? reject(err) : resolve(documents);
                 }           
             )
+
+    });    
+}
+
+// transfer
+function transfer(email, amount, trans){
+    return new Promise((resolve, reject) => {    
+        const customers = db
+            .collection('users')            
+            .findOneAndUpdate(
+                {email: fromEmail},
+                { $inc:  { balance: -(amount)},
+                  $push: { trans: trans}                
+                },
+                {returnDocument: 'after' },
+                function (err, documents) {
+                    err ? reject(err) : resolve(documents);
+                }           
+            )          
+
 
     });    
 }
@@ -111,4 +128,4 @@ function all(){
     })
 }
 
-module.exports = {create, findOne, find, update, transfer, all};
+module.exports = {create, findOne, find, update, transfer2, transfer, all};

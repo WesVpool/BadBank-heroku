@@ -18,13 +18,38 @@ const firebaseConfig = {
 if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
 }
+const greetArray = [
+  `Welcome, `,
+  `Have a good day, `,
+  `Howdy, `,
+  `Hey there, `,
+  `Greetings, `,
+  `Ahoy, `,
+  `Hello, `,
+  `Hi, `,
+  `Hey, `,
+  `Hi there, `,
+  `Hello there, `,
+]
+
+const randomNumber = Math.floor(Math.random()*greetArray.length);
+
+// const randomGreeting = 
+  
+//   return greetArray[randomNumber]
+// }
+
+function capName (string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
 
 function active(e) {
   var el = document.querySelector('.active');
   if(el) {
     el.classList.remove('active');
-  }
-  e.target.classList.add('active');
+  };
+  const id = e.target.id === "" ? document.getElementById("login") : e.target;
+  id.classList.add('active');
 }
 
 function Card(props) {
