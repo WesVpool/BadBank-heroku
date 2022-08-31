@@ -14,12 +14,15 @@ function AllData(){
     }
   }); 
 
+
+
   React.useEffect(() => {
     // // console.log(liveUser);
     if (liveUser !== null){
       // setName(liveUser.name);
       setLogin(true);
     };
+  
     if (login === true){
       const navUser = document.getElementById("login");
       navUser.textContent = `${getRandomGreet()} ${liveUser.name}!`;
@@ -43,21 +46,25 @@ function AllData(){
 
   function info () {
     const [showPass, setShowPass]       = React.useState(false);
-    const pass = (<h5 className="fw-bold" style={{marginTop: 10+'px'}}>Password: {liveUser.password}</h5>);
+    const pass = (<h5 className="fst-italic" >Password: {liveUser.password}</h5>);
     let toggle = showPass === false ? true : false;
     let btText = showPass === false ? "Show Password" : "Hide Password";
     return(
-      <div>
+      <div className="border-bottom">
+        <h5 className="fw-bold">Account#: {liveUser.acctNum}</h5>
         <h5 className="fw-bold">Name: {liveUser.name}</h5>
         <h5 className="fw-bold">Email: {liveUser.email}</h5>
         <div>
-          <button type="submit" className="btn btn-dark" onClick={() => setShowPass(toggle)}>{btText}</button>
+          <button type="submit" className="btn btn-dark" style={{marginBottom: 10+'px'}} onClick={() => setShowPass(toggle)}>{btText}</button>
           {showPass ? pass : null}
         </div>
       </div>
     )
   }
  
+
+  
+
   return liveUser === null ? (
 
     <div>
@@ -69,17 +76,18 @@ function AllData(){
     <Card
       bgcolor="white"
       txtcolor="black"
-      header={info()}
-      title={dollar()}
+      header={<h3>Account Information</h3>}
+      title={info()}
       body={show ? (  
             <div>
-
+              {dollar()}
               <button type="submit" className="btn btn-dark" onClick={() => setShow(false)}>Show Transactions</button>
 
 
             </div>
           ):(
             <div>
+              {dollar()}
               <button type="submit" className="btn btn-dark" style={{marginBottom: 10+'px'}} onClick={() => setShow(true)}>Hide Transactions</button>
               <h5>{liveUser.name}'s Transactions:</h5>
               {liveUser.trans.map((vary, i) => (

@@ -9,6 +9,7 @@ const admin   = require('./admin');
 app.use(express.static('public'));
 app.use(cors());
 
+
 // create user account
 app.get('/account/create/:name/:email/:password', function (req, res) {
     // read token from header

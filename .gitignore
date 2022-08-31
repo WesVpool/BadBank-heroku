@@ -1,3 +1,4 @@
 node_modules
 .env
 alldataAdmin.js
+alldata-update.js
