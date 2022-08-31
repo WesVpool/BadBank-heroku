@@ -14,26 +14,23 @@ function AllData(){
     }
   }); 
 
-  // if(liveUser === null){
-  //   return(
-  //     <div>
-  //       <h5>USER NOT LOGGED IN!</h5>
-  //         <a href="#/login/" className="btn btn-light" >Login</a>
-  //     </div>)
-  // };
+  React.useEffect(() => {
+    // // console.log(liveUser);
+    if (liveUser !== null){
+      // setName(liveUser.name);
+      setLogin(true);
+    };
+    if (login === true){
+      const navUser = document.getElementById("login");
+      navUser.textContent = `${getRandomGreet()} ${liveUser.name}!`;
+      navUser.title = "Logout of your account!";
+    } else {
+      const navUser = document.getElementById("login");
+      navUser.textContent = "Login";
+      navUser.title = "Login of your account!";
+    }
 
-
-  // React.useEffect(() => {
-        
-  //   // fetch all accounts from API
-  //   fetch(`/account/find/${email}`)
-  //       .then(response => response.json())
-  //       .then(data => {
-  //           console.log(data);
-  //           setData(data);                
-  //       });
-
-  // }, []);
+  }, [login]);
 
   function dollar () {
     // return `Current Balance: $${liveUser.balanc}`;
@@ -45,35 +42,21 @@ function AllData(){
   }
 
   function info () {
+    const [showPass, setShowPass]       = React.useState(false);
+    const pass = (<h5 className="fw-bold" style={{marginTop: 10+'px'}}>Password: {liveUser.password}</h5>);
+    let toggle = showPass === false ? true : false;
+    let btText = showPass === false ? "Show Password" : "Hide Password";
     return(
       <div>
         <h5 className="fw-bold">Name: {liveUser.name}</h5>
         <h5 className="fw-bold">Email: {liveUser.email}</h5>
-        <h5 className="fw-bold">Password: {liveUser.password}</h5>
+        <div>
+          <button type="submit" className="btn btn-dark" onClick={() => setShowPass(toggle)}>{btText}</button>
+          {showPass ? pass : null}
+        </div>
       </div>
     )
   }
-
-  // function users() {
-  //   if(liveUser !== null){
-  //   return(
-  //     <Card
-  //       bgcolor="white"
-  //       txtcolor="black"
-  //       header={info()}
-  //       title={dollar()}
-  //       body={
-  //         <div>
-  //           <h5>{liveUser.name}'s Transactions:</h5>
-
-  //           {liveUser.trans.map((vary, i) => (
-  //             <p key={i}>{vary}</p>
-  //           ))}
-                       
-  //         </div>
-  //       }/>    
-  //   )}
-  //   }
  
   return liveUser === null ? (
 

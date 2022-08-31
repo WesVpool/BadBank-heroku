@@ -1,39 +1,6 @@
-function NavBar() {
-  const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
-  const [show, setShow]         = React.useState('');
-  const [login, setLogin]       = React.useState('');
-  const [status, setStatus]     = React.useState('');
-  const [name, setName]         = React.useState('');
-  const [email, setEmail]       = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [data, setData]         = React.useState('');
-  
-
-  firebase.auth().onAuthStateChanged((user) => {
-    if (!user) {
-      setLogin(false)}
-  }); 
+function NavBar(login) {
 
   React.useEffect(() => {
-    console.log(liveUser);
-    if (liveUser !== null){
-      setName(liveUser.name);
-      setLogin(true);
-    };
-    if (login === true){
-      const navUser = document.getElementById("login");
-      navUser.textContent = `${greetArray[randomNumber]} ${name}!`;
-      navUser.title = "Logout of your account!";
-    } else {
-      const navUser = document.getElementById("login");
-      navUser.textContent = "Login";
-      navUser.title = "Login of your account!";
-    }
-  }, [login]);
-
-  React.useEffect(() => {
-    // const old = document.getElementsByClassName("nav-link active");
-    // old.className = "nav-link"
     let active = window.location.hash.replace(/[#/]/g, "").toLowerCase();
     if (active === ""){
       active = "home"
@@ -41,6 +8,7 @@ function NavBar() {
     const id = document.getElementById(active);
     id.className = "nav-link active"
   }, []);
+
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -88,7 +56,7 @@ function NavBar() {
               </li>
               <li className="nav-item">
                 <a className="nav-link" id="alldata" data-toggle="tooltip" data-placement="bottom" title="Account Information" href="#/Alldata/" onClick={e => active(e)}>
-                  AllData
+                  Account
                 </a>
               </li>
             </ul>

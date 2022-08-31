@@ -32,11 +32,25 @@ const greetArray = [
   `Hello there, `,
 ]
 
-const randomNumber = Math.floor(Math.random()*greetArray.length);
 
-// const randomGreeting = 
-  
-//   return greetArray[randomNumber]
+
+function getRandomGreet() {
+  const randNum = Math.floor(Math.random()*greetArray.length);
+  return greetArray[randNum]
+}
+
+// function getRandomNumber() {
+//   return Math.floor(Math.random()*greetArray.length);
+// }
+// let prevNum = NaN
+// const randoNum = getRandomNumber()
+// function randomGreeting (){
+//   if (randoNum !== prevNum) {
+//     prevNum = randoNum
+//     return greetArray[randoNum]
+//   }else{
+//     return greetArray[getRandomNumber()]
+//   }
 // }
 
 function capName (string) {

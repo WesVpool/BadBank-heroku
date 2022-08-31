@@ -24,26 +24,22 @@ function Withdraw(){
     }
   }); 
 
-  // if(login === false){
-  //   return(
-  //     <div>
-  //       <h5>USER NOT LOGGED IN!</h5>
-  //         <a href="#/login/" className="btn btn-light" onClick={e => active(e)}>Login</a>
-  //     </div>)
-  // };
+  React.useEffect(() => {
+    // // console.log(liveUser);
+    if (liveUser !== null){
+      setLogin(true);
+    };
+    if (login === true){
+      const navUser = document.getElementById("login");
+      navUser.textContent = `${getRandomGreet()} ${name}!`;
+      navUser.title = "Logout of your account!";
+    } else {
+      const navUser = document.getElementById("login");
+      navUser.textContent = "Login";
+      navUser.title = "Login of your account!";
+    }
 
-  // React.useEffect(() => {
-        
-  //   // fetch all accounts from API
-  //   fetch(`/account/find/${email}`)
-  //       .then(response => response.json())
-  //       .then(data => {
-  //           console.log(data);
-  //           setBalance(data[0].balance);
-  //           setName(data[0].name);               
-  //       });
-
-  // }, []);
+  }, [login]);
 
   function validate(field) {
     if (!Number(field)) {

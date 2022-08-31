@@ -29,7 +29,7 @@ function Login(){
     };
     if (login === true){
       const navUser = document.getElementById("login");
-      navUser.textContent = `${greetArray[randomNumber]} ${name}!`;
+      navUser.textContent = `${getRandomGreet()} ${name}!`;
       navUser.title = "Logout of your account!";
     } else {
       const navUser = document.getElementById("login");
@@ -55,7 +55,6 @@ function Login(){
     // liveUserLog.splice(0,1);
     auth.signOut();
     sessionStorage.clear();
-    console.log(liveUser)
   }
 
   function userLogin(){

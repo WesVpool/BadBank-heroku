@@ -28,7 +28,7 @@ function CreateAccount(){
     };
     if (login === true){
       const navUser = document.getElementById("login");
-      navUser.textContent = `${greetArray[randomNumber]} ${name}!`;
+      navUser.textContent = `${getRandomGreet()} ${name}!`;
       navUser.title = "Logout of your account!";
     } else {
       const navUser = document.getElementById("login");
