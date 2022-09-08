@@ -62,7 +62,6 @@ function CreateAccount(){
   }
 
   function handleCreate(){
-    console.log(name,email,password);
     if (!validate(name,     'name'))     return;
     if (!validate(email,    'email'))    return;
     if (!validate(password, 'password')) return;
