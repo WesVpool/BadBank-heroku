@@ -83,7 +83,7 @@ function Transfer(){const auth = firebase.auth();
                   setShow(false);
                   setStatus('');
               } catch(err) {
-                  setStatus('Transfer failed: '+text)
+                  setStatus('Transfer failed: USER DOES NOT EXIST)
                   console.log('err:', text);
               }
           });

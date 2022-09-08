@@ -66,7 +66,6 @@ function Login(){
   }
 
   function userLogin(){
-    console.log(email,password);
     if (!validate(email,    'email'))    return;
     if (!validate(password, 'password')) return;
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
