@@ -239,7 +239,7 @@ app.get('/account/transfer/:toEmail/:amount', function (req, res) {
                 .then((user) => {
                     console.log(`to email ${req.params.toEmail}`);
                     // if user exists, return error message
-                    if(user.length <= 0){
+                    if(user === null){
                         console.log('User does not exist');
                         res.status(404).send('User does not exist');  
                     }
