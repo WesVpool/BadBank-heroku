@@ -36,8 +36,8 @@ function Home(){
   return (
     <Card
       txtcolor="black"
-      header={<h5 className="text-center">Welcome to United Bad Bank</h5>}
-      title={<h5 className="text-center">You can move around using the navigation bar above.</h5>}
+      header= "Welcome to United Bad Bank!"
+      title= "You can move around using the navigation bar above."
       body={(<img src="bank.png" className="img-fluid" alt="Responsive image"/>)}
     />    
   );  
