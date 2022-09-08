@@ -1,7 +1,5 @@
 function AllData(){
-  // const auth = firebase.auth();
-  // const user = auth.currentUser;
-  
+
   const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
   const [login, setLogin]       = React.useState('');
   const [show, setShow]       = React.useState(true);
@@ -17,9 +15,7 @@ function AllData(){
 
 
   React.useEffect(() => {
-    // // console.log(liveUser);
     if (liveUser !== null){
-      // setName(liveUser.name);
       setLogin(true);
     };
   
@@ -36,7 +32,6 @@ function AllData(){
   }, [login]);
 
   function dollar () {
-    // return `Current Balance: $${liveUser.balanc}`;
     return(
       <div>
         <h5 className="fw-bold">Current Balance: ${liveUser.balance}</h5>
@@ -55,7 +50,13 @@ function AllData(){
         <h5 className="fw-bold">Name: {liveUser.name}</h5>
         <h5 className="fw-bold">Email: {liveUser.email}</h5>
         <div>
-          <button type="submit" className="btn btn-dark" style={{marginBottom: 10+'px'}} onClick={() => setShowPass(toggle)}>{btText}</button>
+          <button type="submit" 
+            className="btn btn-dark" 
+            style={{marginBottom: 10+'px'}} 
+            onClick={() => setShowPass(toggle)}>
+            {btText}
+          </button>
+          
           {showPass ? pass : null}
         </div>
       </div>
@@ -80,15 +81,28 @@ function AllData(){
       title={info()}
       body={show ? (  
             <div>
-              {dollar()}
-              <button type="submit" className="btn btn-dark" onClick={() => setShow(false)}>Show Transactions</button>
 
+              {dollar()}
+
+              <button type="submit" 
+                className="btn btn-dark" 
+                onClick={() => setShow(false)}>
+                Show Transactions
+              </button>
 
             </div>
           ):(
             <div>
+
               {dollar()}
-              <button type="submit" className="btn btn-dark" style={{marginBottom: 10+'px'}} onClick={() => setShow(true)}>Hide Transactions</button>
+
+              <button type="submit" 
+                className="btn btn-dark" 
+                style={{marginBottom: 10+'px'}} 
+                onClick={() => setShow(true)}>
+                Hide Transactions
+              </button>
+
               <h5>{liveUser.name}'s Transactions:</h5>
               {liveUser.trans.map((vary, i) => (
                 <p key={i}>{vary}</p>

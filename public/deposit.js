@@ -1,8 +1,6 @@
 function Deposit(){
   const auth = firebase.auth();
-  // const liveUser = React.useContext(UserContext).liveUser;
   const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
-  const action = "DEPOSIT";
 
   const [data, setData]         = React.useState('');
   const [show, setShow]         = React.useState(true);
@@ -16,18 +14,14 @@ function Deposit(){
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setLogin(true);
-      // setName(liveUser.name);
       setEmail(user.email);
-      // setBalance(liveUser.balance);
     } else {
       setLogin(false);
     }
   }); 
 
   React.useEffect(() => {
-    // // console.log(liveUser);
     if (liveUser !== null){
-      // setName(liveUser.name);
       setLogin(true);
     };
     if (login === true){
@@ -68,8 +62,7 @@ function Deposit(){
     if (auth.currentUser) {
       auth.currentUser.getIdToken()
         .then(idToken => {
-          console.log("idToken:", idToken);
-          fetch(`/account/update/${email}/${amount}/${action}`, {
+          fetch(`/account/update/${email}/${amount}/DEPOSIT`, {
             method: 'GET',
             headers: {
                 'Authorization': idToken
@@ -78,12 +71,9 @@ function Deposit(){
           .then(response => response.json())
           .then(data => {
               try {
-                  // const data = JSON.parse(text);
                   setBalance(data.value.balance);
-                  // liveUser.splice(0,1,data.value);
                   window.sessionStorage.setItem("liveUser", JSON.stringify(data.value));
                   setShow(false);
-                  console.log('JSON:', data.value.balance);
               } catch(err) {
                   setStatus('Deposit failed')
                   console.log('err:', data.value);
@@ -95,23 +85,6 @@ function Deposit(){
       console.warn("There is currently no logged in user.");
     }
   }
-  // function handleDeposit(){
-  //   if (!validate(amount, "amount")) return;
-    // fetch(`/account/update/${email}/${amount}/${action}`)
-    // .then(response => response.json())
-    // .then(user => {
-    //     try {
-    //         // const data = JSON.parse(text);
-    //         setBalance(user.value.balance);
-    //         currentUser.splice(0,1,user.value);
-    //         setShow(false);
-    //         console.log('JSON:', user.value.balance);
-    //     } catch(err) {
-    //         setStatus('Deposit failed')
-    //         console.log('err:', user.value);
-    //     }
-    // });
-  // }
 
   const persHeader = `${name}, Make A Deposit`
 
@@ -132,15 +105,31 @@ function Deposit(){
             Current Balance: ${balance}<br/>
             <br/>
             Deposit Amount<br/>
-            <input type="input" className="form-control" id="amount" placeholder="Enter amount" value={amount} onChange={e => setAmount(e.currentTarget.value)}/><br/>
-            <button type="submit" className="btn btn-light" onClick={() => handleDeposit()} disabled={!amount}>Deposit</button>
+            <input type="input" 
+              className="form-control" 
+              id="amount" 
+              placeholder="Enter amount" 
+              value={amount} 
+              onChange={e => setAmount(e.currentTarget.value)}/><br/>
+
+            <button type="submit" 
+              className="btn btn-light" 
+              id="buttonstyle"
+              onClick={() => handleDeposit()} 
+              disabled={!amount}>Deposit</button>
             </>
           ):(
             <>
             <h5>Success, {name}!</h5>
+
             ${amount} has been deposited to your acount.<br/>
-            <h5>Your new account balance is: ${balance}</h5>
-            <button type="submit" className="btn btn-light" onClick={() => clearForm()}>Make Another Deposit</button>
+
+            <h5>Your new account balance is: ${balance}</h5><br/>
+
+            <button type="submit" 
+              className="btn btn-light" 
+              id="buttonstyle"
+              onClick={() => clearForm()}>Make Another Deposit</button>
             </>
           )}
   />

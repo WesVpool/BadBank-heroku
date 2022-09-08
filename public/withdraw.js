@@ -1,10 +1,8 @@
 function Withdraw(){
   const auth = firebase.auth();
   const user = auth.currentUser;
-  // const liveUser = React.useContext(UserContext).liveUser;
   const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
-  const action = "WITHDRAW"
-  const [data, setData]         = React.useState('');
+
   const [show, setShow]         = React.useState(true);
   const [login, setLogin]       = React.useState('');
   const [status, setStatus]     = React.useState('');
@@ -16,16 +14,13 @@ function Withdraw(){
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setLogin(true);
-      // setName(liveUser.name);
       setEmail(user.email);
-      // setBalance(liveUser.balance);
     } else {
       setLogin(false);
     }
   }); 
 
   React.useEffect(() => {
-    // // console.log(liveUser);
     if (liveUser !== null){
       setLogin(true);
     };
@@ -72,8 +67,7 @@ function Withdraw(){
     if (auth.currentUser) {
       auth.currentUser.getIdToken()
         .then(idToken => {
-          console.log("idToken:", idToken);
-          fetch(`/account/update/${email}/${-(amount)}/${action}`, {
+          fetch(`/account/update/${email}/${-(amount)}/WITHDRAW`, {
             method: 'GET',
             headers: {
                 'Authorization': idToken
@@ -82,12 +76,9 @@ function Withdraw(){
           .then(response => response.json())
           .then(data => {
               try {
-                  // const data = JSON.parse(text);
                   setBalance(data.value.balance);
-                  // liveUser.splice(0,1,data.value);
                   window.sessionStorage.setItem("liveUser", JSON.stringify(data.value));
                   setShow(false);
-                  console.log('JSON:', data.value.balance);
               } catch(err) {
                   setStatus('Withdraw failed')
                   console.log('err:', data.value);
@@ -99,27 +90,6 @@ function Withdraw(){
       console.warn("There is currently no logged in user.");
     }
   }
-  // function handleWithdraw(){
-  //   if (!validate(amount, "amount")) return;
-    // if (amount > balance) {
-    //   setStatus("Insufficient Funds!");
-    //   setAmount('')
-    // }else {
-  //   fetch(`/account/update/${email}/${-(amount)}/${action}`)
-  //   .then(response => response.json())
-  //   .then(user => {
-  //       try {
-  //           // const data = JSON.parse(text);
-  //           setBalance(user.value.balance);
-  //           setStatus('')
-  //           setShow(false);
-  //           console.log('JSON:', user.value.balance);
-  //       } catch(err) {
-  //           setStatus('Withdraw failed')
-  //           console.log('err:', user.value);
-  //       }
-  //   });
-  // }}
 
   const persHeader = `${name}, Make A Withdraw`
 
@@ -140,15 +110,31 @@ function Withdraw(){
             Current Balance: ${balance}<br/>
             <br/>
             Withdraw Amount<br/>
-            <input type="input" className="form-control" id="amount" placeholder="Enter amount" value={amount} onChange={e => setAmount(e.currentTarget.value)}/><br/>
-            <button type="submit" className="btn btn-light" onClick={() => handleWithdraw()} disabled={!amount}>Withdraw</button>
+            <input type="input" 
+              className="form-control" 
+              id="amount" 
+              placeholder="Enter amount" 
+              value={amount} 
+              onChange={e => setAmount(e.currentTarget.value)}/><br/>
+
+            <button type="submit" 
+              className="btn btn-light"
+              id="buttonstyle" 
+              onClick={() => handleWithdraw()} 
+              disabled={!amount}>Withdraw</button>
             </>
           ):(
             <>
             <h5>Success, {name}!</h5>
+
             ${amount} has been Withdrawn from your acount.<br/>
-            <h5>Your new account balance is: ${balance}</h5>
-            <button type="submit" className="btn btn-light" onClick={() => clearForm()}>Make Another Withdraw</button>
+
+            <h5>Your new account balance is: ${balance}</h5><br/>
+
+            <button type="submit" 
+              className="btn btn-light"
+              id="buttonstyle" 
+              onClick={() => clearForm()}>Make Another Withdraw</button>
             </>
           )}
   />

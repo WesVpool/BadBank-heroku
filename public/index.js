@@ -21,7 +21,3 @@ ReactDOM.render(
   <Spa/>,
   document.getElementById('root')
 );
-
-
-// /* <Route path="/balance/" component={Balance} /> */
-// /* <Route path="/login/" component={Login} /> */
