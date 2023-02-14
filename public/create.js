@@ -1,14 +1,14 @@
 function CreateAccount(){
   const auth = firebase.auth();
   const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
+
   const [show, setShow]         = React.useState('');
   const [login, setLogin]       = React.useState('');
   const [status, setStatus]     = React.useState('');
   const [name, setName]         = React.useState('');
   const [email, setEmail]       = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [data, setData] = React.useState('');
-  const randomNumber = Math.floor(Math.random()*greetArray.length);
+
 
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
@@ -21,7 +21,6 @@ function CreateAccount(){
   }); 
 
   React.useEffect(() => {
-    // console.log(liveUser);
     if (liveUser !== null){
       setName(liveUser.name);
       setLogin(true);
@@ -30,11 +29,15 @@ function CreateAccount(){
       const navUser = document.getElementById("login");
       navUser.textContent = `${getRandomGreet()} ${name}!`;
       navUser.title = "Logout of your account!";
+
+      linkArr.forEach(el => document.getElementById(el).style.display = "block");
     } else {
       const navUser = document.getElementById("login");
       navUser.textContent = "Login";
       navUser.title = "Login of your account!";
-    }
+
+      linkArr.forEach(el => document.getElementById(el).style.display = "none");
+    } 
 
   }, [login]);
 
@@ -59,20 +62,17 @@ function CreateAccount(){
   }
 
   function handleCreate(){
-    console.log(name,email,password);
     if (!validate(name,     'name'))     return;
     if (!validate(email,    'email'))    return;
     if (!validate(password, 'password')) return;
     if (!validatePass(password, 'password')) return;
     auth.signOut();
-    console.log(name);
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
       .then(() => {
       auth.createUserWithEmailAndPassword(
       email,
       password)
       .then((result) => {
-        // setShow(false);
         result.user.updateProfile({
           displayName: name
         });
@@ -80,7 +80,6 @@ function CreateAccount(){
       .then((userCred) => {
         auth.currentUser.getIdToken()
         .then(idToken => {
-          console.log("idToken:", idToken);
           fetch(`/account/create/${name}/${email}/${password}`, {
             method: 'GET',
             headers: {
@@ -94,7 +93,6 @@ function CreateAccount(){
                 window.sessionStorage.setItem("liveUser", text);           
                 setStatus('');   
                 setShow(false); 
-                console.log('JSON:', data);
               } catch(err) {
                 setStatus('Account Creation Failed. Please Try Again');
                 console.log('err:', text);
@@ -110,6 +108,46 @@ function CreateAccount(){
       });
       });
   
+}
+
+function handleGoogle(){
+  auth.signOut();
+  var provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+    .then(() => {
+    auth.signInWithPopup(provider)
+    .then((result) => {
+      setName(result.user.displayName);
+      auth.currentUser.getIdToken()
+      .then(idToken => {
+        fetch(`/account/google/${result.user.displayName}/${result.user.email}`, {
+          method: 'GET',
+          headers: {
+              'Authorization': idToken
+          }
+        })
+        .then(response => response.text())
+        .then(text => {
+            try {
+              const data = JSON.parse(text);   
+              window.sessionStorage.setItem("liveUser", text);           
+              setStatus('');   
+              setShow(false); 
+            } catch(err) {
+              setStatus('Account Creation Failed. Please Try Again');
+              console.log('err:', text);
+            }
+        });
+      })
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode + errorMessage);
+      setStatus(errorMessage);
+    });
+    });
+
 }
 
   function clearForm(){
@@ -135,6 +173,14 @@ function CreateAccount(){
       status={status}
       body={show ? (  
               <>
+                <button type="button"
+                  className="google" 
+                  onClick={e => handleGoogle(e)}>Sign up with Google</button><br/>
+
+                <div className="or-seperator">
+                  <i className="bg-success">or</i>
+                </div>
+
                 Name<br/>
                 <input type="input"
                   className="form-control" 
@@ -161,14 +207,19 @@ function CreateAccount(){
                   onChange={e => setPassword(e.currentTarget.value)}/><br/>
 
                 <button type="submit" 
-                  className="btn btn-light" 
+                  className="btn btn-light"
+                  id="buttonstyle"
                   onClick={e => handleCreate(e)} 
-                  disabled={emptyInput()}>Create Account</button>
+                  disabled={emptyInput()}>Create Account</button><br/>
               </>
             ):(
               <>
-              <h5>Success, Welcome {name}!</h5>
-              <button type="submit" className="btn btn-light" onClick={clearForm}>Add another account</button>
+              <h5>Success, Welcome {name}!</h5><br/>
+
+              <button type="submit" 
+                className="btn btn-light" 
+                id="buttonstyle" 
+                onClick={clearForm}>Add another account</button>
               </>
             )}
     />

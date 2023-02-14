@@ -32,26 +32,13 @@ const greetArray = [
   `Hello there, `,
 ]
 
+const linkArr = ['deposit', 'withdraw', 'transfer', 'alldata'];
 
 
 function getRandomGreet() {
   const randNum = Math.floor(Math.random()*greetArray.length);
   return greetArray[randNum]
 }
-
-// function getRandomNumber() {
-//   return Math.floor(Math.random()*greetArray.length);
-// }
-// let prevNum = NaN
-// const randoNum = getRandomNumber()
-// function randomGreeting (){
-//   if (randoNum !== prevNum) {
-//     prevNum = randoNum
-//     return greetArray[randoNum]
-//   }else{
-//     return greetArray[getRandomNumber()]
-//   }
-// }
 
 function capName (string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
@@ -74,11 +61,11 @@ function Card(props) {
   }
 
   return (
-    <div className={classes()} style={{ maxWidth: "25rem" }}>
-      <div className="card-header">{props.header}</div>
+    <div className={classes()} style={{ maxWidth: "25rem", margin: "auto", marginTop: "2rem" }}>
+      <div className="card-header text-center fs-5 fw-bold">{props.header}</div>
       <div className="card-body">
-        {props.title && <h5 className="card-title">{props.title}</h5>}
-        {props.text && <p className="card-text">{props.text}</p>}
+        {props.title && <h5 className="card-title text-center fs-5">{props.title}</h5>}
+        {props.text}
         {props.body}
         {props.status && <div id="createStatus">{props.status}</div>}
       </div>

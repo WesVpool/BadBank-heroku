@@ -2,10 +2,10 @@
   "name": "bad-bank-full",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "westonvanderpool@gmail.com",
@@ -16,6 +16,8 @@
     "express": "^4.18.1",
     "firebase": "^9.9.3",
     "firebase-admin": "^11.0.1",
-    "mongodb": "^4.9.0"
+    "mongodb": "^4.9.0",
+    "swagger-jsdoc": "^6.2.5",
+    "swagger-ui-express": "^4.5.0"
   }
 }

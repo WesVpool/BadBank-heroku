@@ -1,8 +1,8 @@
 function Transfer(){const auth = firebase.auth();
+  
   const user = auth.currentUser;
-  // const liveUser = React.useContext(UserContext).liveUser;
   const liveUser = JSON.parse(window.sessionStorage.getItem("liveUser"));
-  const [data, setData]         = React.useState('');
+
   const [show, setShow]         = React.useState(true);
   const [login, setLogin]       = React.useState('');
   const [status, setStatus]     = React.useState('');
@@ -15,18 +15,14 @@ function Transfer(){const auth = firebase.auth();
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setLogin(true);
-      // setName(liveUser.name);
       setEmail(user.email);
-      // setBalance(liveUser.balance);
     } else {
       setLogin(false);
     }
   }); 
 
   React.useEffect(() => {
-    // // console.log(liveUser);
     if (liveUser !== null){
-      // setName(liveUser.name);
       setLogin(true);
     };
     if (login === true){
@@ -72,7 +68,6 @@ function Transfer(){const auth = firebase.auth();
     if (auth.currentUser) {
       auth.currentUser.getIdToken()
         .then(idToken => {
-          console.log("idToken:", idToken);
           fetch(`/account/transfer/${eTrans}/${amount}`, {
             method: 'GET',
             headers: {
@@ -81,17 +76,14 @@ function Transfer(){const auth = firebase.auth();
           })
           .then(response => response.text())
           .then(text => {
-            console.log(text);
               try { 
                   const data = JSON.parse(text);
                   setBalance(data.value.balance);
-                  // liveUser.splice(0,1,data.value);
                   window.sessionStorage.setItem("liveUser", JSON.stringify(data.value));
                   setShow(false);
                   setStatus('');
-                  console.log('JSON:', liveUser);
               } catch(err) {
-                  setStatus('Transfer failed: '+text)
+                  setStatus('Transfer failed: USER DOES NOT EXIST')
                   console.log('err:', text);
               }
           });
@@ -126,17 +118,39 @@ function Transfer(){const auth = firebase.auth();
             Current Balance: ${balance}<br/>
             <br/>
             Recipient's Email Address<br/>
-            <input type="input" className="form-control" id="email" placeholder="Enter email" value={eTrans} onChange={e => setETrans(e.currentTarget.value)}/><br/>
+            <input type="input" 
+              className="form-control" 
+              id="email" 
+              placeholder="Enter email" 
+              value={eTrans} 
+              onChange={e => setETrans(e.currentTarget.value)}/><br/>
+
             Transfer Amount<br/>
-            <input type="input" className="form-control" id="amount" placeholder="Enter amount" value={amount} onChange={e => setAmount(e.currentTarget.value)}/><br/>
-            <button type="submit" className="btn btn-light" onClick={() => handleTransfer()} disabled={!amount}>Transfer</button>
+            <input type="input" 
+              className="form-control" 
+              id="amount" 
+              placeholder="Enter amount" 
+              value={amount} 
+              onChange={e => setAmount(e.currentTarget.value)}/><br/>
+
+            <button type="submit" 
+              className="btn btn-light"
+              id="buttonstyle"  
+              onClick={() => handleTransfer()} 
+              disabled={!amount}>Transfer</button>
             </>
           ):(
             <>
             <h5>Success, {name}!</h5>
+
             ${amount} has been transfered to {eTrans}<br/>
-            <h5>Your new account balance is: ${balance}</h5>
-            <button type="submit" className="btn btn-light" onClick={() => clearForm()}>Make Another Transfer</button>
+
+            <h5>Your new account balance is: ${balance}</h5><br/>
+
+            <button type="submit" 
+              className="btn btn-light" 
+              id="buttonstyle" 
+              onClick={() => clearForm()}>Make Another Transfer</button>
             </>
           )}
   />

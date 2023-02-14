@@ -12,11 +12,22 @@ MongoClient.connect(uri, {useUnifiedTopology: true}, function(err, client) {
     db = client.db('myproject');
 });
 
+
+function getRandom () {
+    let arrRand = []
+    for (var i = 0; i < 14; i++) {
+      var randomNum = Math.floor(Math.random() * 10);
+      arrRand.push(randomNum);
+    };
+    return arrRand.join('')
+  }
+
 // create user account
 function create(name, email, password) {
+    const accountNum = getRandom();
     return new Promise((resolve, reject) => {
         const collection = db.collection('users');
-        const doc = {name, email, password, balance: 100, trans:["$100 Initial Account Balance"]};
+        const doc = {name, email, password, acctNum: accountNum, balance: 100, trans:["$100 Initial Account Balance"]};
         collection.insertOne(doc, {w:1}, function(err, result) {
             err ? reject(err) : resolve(doc);
         });
